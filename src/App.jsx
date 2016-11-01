@@ -4,11 +4,13 @@ import MessageList from './MessageList.jsx';
 
 class App extends Component {
 
+
   constructor(props) {
     super(props);
     //this.state = {loading: false};
     this.state = {
         currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
+        currentMessage: "",
         messages: [
           {
             id: 1,
@@ -20,8 +22,20 @@ class App extends Component {
             username: "Anonymous",
             content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
           }
-        ]
+        ],
       };
+      this.newMessage = this.newMessage.bind(this);
+  }
+
+  newMessage(event) {
+    //this.setState({value: event.target.value});
+    if (event.charCode == 13) {
+      console.log('enter is pressed');
+      console.log(event.target.value);
+      const newMessage = {username: this.state.currentUser.name, content: event.target.value};
+      const message = this.state.messages.concat(newMessage);
+      this.setState({messages: message});
+    }
   }
 
   componentDidMount() {
@@ -45,7 +59,7 @@ class App extends Component {
         </nav>
         <MessageList messages={this.state.messages} />
         {/* <Chatbar /> */}
-        <Chatbar currentUser={this.state.currentUser} />
+        <Chatbar currentUser={this.state.currentUser} newMessage={this.newMessage}/>
         {/* <Button color={this.props.color}>Delete</Button> */}
       </div>
     );
