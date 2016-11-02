@@ -50,7 +50,10 @@ class App extends Component {
 
   newUserName = (event) => {
     if (event.charCode == 13) {
-      var newUser = {name: event.target.value};
+      var newUser = {name: "Anonymous"};
+      if (event.target.value) {
+        newUser = {name: event.target.value};
+      }
       this.setState({currentUser: newUser});
       console.log('New username is now: ', newUser);
     }
