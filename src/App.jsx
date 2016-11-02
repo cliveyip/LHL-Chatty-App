@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Chatbar from './Chatbar.jsx';
 import MessageList from './MessageList.jsx';
+// var uuid = require('node-uuid');
 
 var ws = new WebSocket("ws://localhost:5000");
 
@@ -35,9 +36,14 @@ class App extends Component {
       console.log(event.target.value);
       const newMessage = {username: this.state.currentUser.name, content: event.target.value};
       const message = this.state.messages.concat(newMessage);
-      this.setState({messages: message});
+      // this.setState({messages: message});
       ws.send(JSON.stringify(newMessage));
-      // ws.send(newMessage);
+      ws.onmessage = (event) => {
+        console.log('broadcast event received from server.');
+        console.log(event.data);
+
+        this.setState({messages: this.state.messages.concat(JSON.parse(event.data))})
+      }
     }
   }
 
@@ -48,15 +54,16 @@ class App extends Component {
       console.log('App.jsx: ws.onopen event called');
     };
 
-    setTimeout(() => {
-      console.log("Simulating incoming message");
-      // Add a new message to the list of messages in the data store
-      const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
-      const messages = this.state.messages.concat(newMessage)
-      // Update the state of the app component.
-      // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({messages: messages})
-    }, 3000);
+
+    // setTimeout(() => {
+    //   console.log("Simulating incoming message");
+    //   // Add a new message to the list of messages in the data store
+    //   const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
+    //   const messages = this.state.messages.concat(newMessage)
+    //   // Update the state of the app component.
+    //   // Calling setState will trigger a call to render() in App and all child components.
+    //   this.setState({messages: messages})
+    // }, 3000);
   }
 
   render() {
