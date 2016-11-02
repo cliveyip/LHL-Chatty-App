@@ -2,8 +2,9 @@ import React, {Component} from 'react';
 import Chatbar from './Chatbar.jsx';
 import MessageList from './MessageList.jsx';
 
-class App extends Component {
+var ws = new WebSocket("ws://localhost:5000");
 
+class App extends Component {
 
   constructor(props) {
     super(props);
@@ -35,13 +36,17 @@ class App extends Component {
       const newMessage = {username: this.state.currentUser.name, content: event.target.value};
       const message = this.state.messages.concat(newMessage);
       this.setState({messages: message});
+      ws.send(JSON.stringify(newMessage));
+      // ws.send(newMessage);
     }
   }
 
   componentDidMount() {
     console.log("componentDidMount <App />");
 
-    var exampleSocket = new WebSocket("ws://localhost:5000");
+    ws.onopen = function (event) {
+      console.log('App.jsx: ws.onopen event called');
+    };
 
     setTimeout(() => {
       console.log("Simulating incoming message");
