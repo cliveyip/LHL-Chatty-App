@@ -12,20 +12,10 @@ class App extends Component {
     super(props);
     //this.state = {loading: false};
     this.state = {
-        currentUser: {name: "Bob"}, // optional. if currentUser is not defined, it means the user is Anonymous
+        currentUser: {name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
         currentMessage: "",
-        messages: [
-          {
-            id: 1,
-            username: "Bob",
-            content: "Has anyone seen my marbles?",
-          },
-          {
-            id: 2,
-            username: "Anonymous",
-            content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-          }
-        ],
+        messages: [],
+        messageSystem: []
       };
       this.newMessage = this.newMessage.bind(this);
   }
@@ -35,16 +25,10 @@ class App extends Component {
     if (event.charCode == 13) {
       console.log('enter is pressed');
       console.log(event.target.value);
-      const newMessage = {username: this.state.currentUser.name, content: event.target.value};
+      const newMessage = {username: this.state.currentUser.name, content: event.target.value, type: "postMessage"};
       const message = this.state.messages.concat(newMessage);
       // this.setState({messages: message});
       ws.send(JSON.stringify(newMessage));
-      ws.onmessage = (event) => {
-        console.log('broadcast event received from server.');
-        console.log(event.data);
-
-        this.setState({messages: this.state.messages.concat(JSON.parse(event.data))})
-      }
     }
   }
 
@@ -56,6 +40,11 @@ class App extends Component {
       }
       this.setState({currentUser: newUser});
       console.log('New username is now: ', newUser);
+      // client sends
+      // {"type": "postNotification", "content": "UserA has changed their name to UserB."}
+      const newMessage = {type: "postNotification", content: this.state.currentUser.name + ' has changed their name to ' + newUser.name};
+      const message = this.state.messages.concat(newMessage);
+      ws.send(JSON.stringify(newMessage));
     }
   };
 
@@ -66,6 +55,31 @@ class App extends Component {
       console.log('App.jsx: ws.onopen event called');
     };
 
+    ws.onmessage = (event) => {
+
+
+      const data = JSON.parse(event.data);
+      console.log(data);
+      // server receives message above and then broadcasts this to all clients
+      // {"type": "incomingNotification", "content": "UserA changed their name to UserB."}
+      if (data.type == 'postMessage') {
+
+        console.log('postMessage event received from server.');
+        var incomingData = JSON.parse(event.data);
+        incomingData.type = "incomingMessage";
+
+        this.setState({messages: this.state.messages.concat(incomingData)})
+      }
+      if (data.type == 'postNotification') {
+        console.log('postNotification event received from server.');
+        console.log(JSON.parse(event.data));
+        var incomingData = JSON.parse(event.data);
+        this.setState({messageSystem: this.state.messageSystem.concat(incomingData)})
+
+      }
+
+
+    }
   }
 
   render() {
@@ -74,7 +88,7 @@ class App extends Component {
         <nav>
           <h1>Chatty</h1>
         </nav>
-        <MessageList messages={this.state.messages} />
+        <MessageList messages={this.state.messages} messageSystem={this.state.messageSystem} />
         {/* <Chatbar /> */}
         <Chatbar currentUser={this.state.currentUser} newMessage={this.newMessage} newUserName={this.newUserName}/>
         {/* <Button color={this.props.color}>Delete</Button> */}
