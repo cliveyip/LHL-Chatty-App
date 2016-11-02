@@ -40,6 +40,9 @@ class App extends Component {
 
   componentDidMount() {
     console.log("componentDidMount <App />");
+
+    var exampleSocket = new WebSocket("ws://localhost:5000");
+
     setTimeout(() => {
       console.log("Simulating incoming message");
       // Add a new message to the list of messages in the data store
