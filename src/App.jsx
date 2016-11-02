@@ -4,6 +4,7 @@ import MessageList from './MessageList.jsx';
 // var uuid = require('node-uuid');
 
 var ws = new WebSocket("ws://localhost:5000");
+var username;
 
 class App extends Component {
 
@@ -47,6 +48,14 @@ class App extends Component {
     }
   }
 
+  newUserName = (event) => {
+    if (event.charCode == 13) {
+      var newUser = {name: event.target.value};
+      this.setState({currentUser: newUser});
+      console.log('New username is now: ', newUser);
+    }
+  };
+
   componentDidMount() {
     console.log("componentDidMount <App />");
 
@@ -54,16 +63,6 @@ class App extends Component {
       console.log('App.jsx: ws.onopen event called');
     };
 
-
-    // setTimeout(() => {
-    //   console.log("Simulating incoming message");
-    //   // Add a new message to the list of messages in the data store
-    //   const newMessage = {id: 3, username: "Michelle", content: "Hello there!"};
-    //   const messages = this.state.messages.concat(newMessage)
-    //   // Update the state of the app component.
-    //   // Calling setState will trigger a call to render() in App and all child components.
-    //   this.setState({messages: messages})
-    // }, 3000);
   }
 
   render() {
@@ -74,7 +73,7 @@ class App extends Component {
         </nav>
         <MessageList messages={this.state.messages} />
         {/* <Chatbar /> */}
-        <Chatbar currentUser={this.state.currentUser} newMessage={this.newMessage}/>
+        <Chatbar currentUser={this.state.currentUser} newMessage={this.newMessage} newUserName={this.newUserName}/>
         {/* <Button color={this.props.color}>Delete</Button> */}
       </div>
     );
