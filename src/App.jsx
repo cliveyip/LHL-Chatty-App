@@ -15,7 +15,8 @@ class App extends Component {
         currentUser: {name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
         currentMessage: "",
         messages: [],
-        messageSystem: []
+        messageSystem: [],
+        userCount: 0
       };
       this.newMessage = this.newMessage.bind(this);
   }
@@ -72,9 +73,14 @@ class App extends Component {
       }
       if (data.type == 'postNotification') {
         console.log('postNotification event received from server.');
-        console.log(JSON.parse(event.data));
         var incomingData = JSON.parse(event.data);
         this.setState({messageSystem: this.state.messageSystem.concat(incomingData)})
+
+      }
+      if (data.type == 'incomingUserCount') {
+        console.log('incomingUserCount event received from server.');
+        var incomingData = JSON.parse(event.data);
+        this.setState({userCount: incomingData.count});
 
       }
 
@@ -87,6 +93,7 @@ class App extends Component {
       <div className="wrapper">
         <nav>
           <h1>Chatty</h1>
+          <span id="user-counter">{this.state.userCount} users Online</span>
         </nav>
         <MessageList messages={this.state.messages} messageSystem={this.state.messageSystem} />
         {/* <Chatbar /> */}
