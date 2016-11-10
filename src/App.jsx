@@ -59,29 +59,22 @@ class App extends Component {
     ws.onmessage = (event) => {
 
 
-      const data = JSON.parse(event.data);
-      console.log(data);
+      const incomingData = JSON.parse(event.data);
+
       // server receives message above and then broadcasts this to all clients
       // {"type": "incomingNotification", "content": "UserA changed their name to UserB."}
-      if (data.type == 'postMessage') {
-
+      if (incomingData.type == 'postMessage') {
         console.log('postMessage event received from server.');
-        var incomingData = JSON.parse(event.data);
         incomingData.type = "incomingMessage";
-
         this.setState({messages: this.state.messages.concat(incomingData)})
       }
-      if (data.type == 'postNotification') {
+      if (incomingData.type == 'postNotification') {
         console.log('postNotification event received from server.');
-        var incomingData = JSON.parse(event.data);
         this.setState({messageSystem: this.state.messageSystem.concat(incomingData)})
-
       }
-      if (data.type == 'incomingUserCount') {
+      if (incomingData.type == 'incomingUserCount') {
         console.log('incomingUserCount event received from server.');
-        var incomingData = JSON.parse(event.data);
         this.setState({userCount: incomingData.count});
-
       }
 
 
