@@ -68,7 +68,8 @@ class App extends Component {
           this.setState({messages: this.state.messages.concat(incomingData)});
           break;
         case 'postNotification':
-          this.setState({messageSystem: this.state.messageSystem.concat(incomingData)})
+          incomingData.type = "incomingNotification";
+          this.setState({messages: this.state.messages.concat(incomingData)})
           break;
         case 'incomingUserCount':
           this.setState({userCount: incomingData.count});
